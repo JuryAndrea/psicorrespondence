@@ -1,0 +1,511 @@
+<!doctype html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+    integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"
+    integrity="sha512-RXf+QSDCUQs5uwRKaDoXt55jygZZm2V++WUZduaU/Ui/9EGp3f/2KZVahFZBKGH0s774sd3HmrhUy+SgOFQLVQ=="
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.3.0/jquery.form.min.js"
+    integrity="sha384-qlmct0AOBiA2VPZkMY3+2WqkHtIQ9lSdAsAn5RUJD/3vA5MKDgSGcdmIv4ycVxyn"
+    crossorigin="anonymous"></script>
+
+
+  <title>Degree Of Correspondence (PSI)</title>
+  <meta name="description" content="Online tool that computes the degree of correspondence (psi), . . .">
+  <link href="{{ url_for('static', filename='css/reprdeg.css') }}" rel="stylesheet">
+</head>
+
+<body class="text-center">
+  <a href="#eng" onclick="load_language('eng')">English</a>
+  |
+  <a href="#ita" onclick="load_language('ita')">Italiano</a>
+
+  <h1 id="title"></h1>
+  <p class="h5 mb-4" id="scope"></p>
+
+  <form id="form" class="form-upload" action="#" method="POST" enctype="multipart/form-data">
+    <input name="method" type="hidden" value="">
+    <input name="n_iters" type="hidden" value="">
+    <h1 class="h4 mb-3 font-weight-normal" id="file"></h1>
+
+
+    <div class="text-left informative">
+      <p>
+        <div style="display: inline" class="fas fa-exclamation-triangle"></div>
+        <div id="firstAlert" style="display: inline"></div>
+      </p>
+      <p>
+        <div style="display: inline" class="fas fa-exclamation-triangle"></div>
+        <div id="secondAlert" style="display: inline"></div>
+      </p>
+      <p>
+        <div style="display: inline" class="fas fa-exclamation-triangle"></div>
+        <div id="thirdAlert" style="display: inline"></div>
+      </p>
+    </div>
+
+    <p class="text-right font-italic" id="mandatory"></p>
+
+    <div class="form-group">
+        <label for="degree_to_visualize" id="degreetovisualize"></label>
+        <input type="number" step="0.001" class="form-control" name="degree_to_visualize" id="degree_to_visualize" min="0" max="1">
+    </div>
+
+    <div class="custom-file">
+      <input id="firstCSV" type="file" class="custom-file-input" name="set1" accept=".csv" required
+        pattern="^.+.(csv)$">
+      <label class="custom-file-label" for="customFile" id="firstFile" style="clear: both" required
+        pattern="^.+.(csv)$"></label>
+    </div>
+
+    <div class="multiple-input-wrapper">
+      <div class="custom-file">
+        <input id="secondCSV" type="file" class="custom-file-input" name="set2" accept=".csv" required
+          pattern="^.+.(csv)$">
+        <label class="custom-file-label" for="customFile" id="secondFile" style="clear: both" required
+          pattern="^.+.(csv)$"></label>
+      </div>
+      <p id="message" class="invisible" style="color:red;"></p>
+    </div>
+
+    <div class="form-group">
+        <label for="examplefirstnamecoloumn" id="firstnamecoloumn"></label>
+        <input type="text" class="form-control" name="examplefirstname" id="examplefirstnamecoloumn">
+    </div>
+
+    <div class="form-group">
+        <label for="examplesecondnamecoloumn" id="secondnamecoloumn"></label>
+        <input type="text" class="form-control" name="examplesecondname" id="examplesecondnamecoloumn">
+    </div>
+
+    <div class="form-group">
+        <label for="examplenamecoloumntarget" id="namecoloumntarget"></label>
+        <input type="text" class="form-control" name="examplenamecoloumntarget" id="examplenamecoloumntarget">
+    </div>
+
+    <div class="form-group">
+        <label for="textarea1" id="textarea"></label>
+        <textarea class="form-control" id="textarea1" rows="2" name="textarea1"></textarea>
+    </div>
+
+    <div class="progress" style="margin-bottom: 2%;">
+        <div id="progressBar" class="progress-bar progress-bar-striped bg-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+
+    <button id="calcBtn" class="btn-lg btn-primary" type="submit"></button>
+
+
+    <div class="text-left informative">
+      <div class="float-left">
+        <p>
+          <a class="btn btn-info" href="{{url_for('test')}}" role="button" id="demo"></a>
+        </p>
+      </div>
+      <div class="float-right">
+        <p>
+          <div style="display: inline" class="fas fa-question-circle"></div>
+          <a href="#" data-bs-toggle="modal" data-toggle="modal" data-target="#myModal" id="help" style="display: inline"></a>
+        </p>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+
+    <!-- The Modal -->
+    <div class="modal" id="myModal" style="text-align:left;">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title">Help</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+
+          <!-- Modal body -->
+          <div class="modal-body">
+            <p id="description"></p>
+            <ol>
+                <li><p id="needed_file_1"></p></li>
+                <li><p id="needed_file_2"></p></li>
+            </ol>
+          </div>
+
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Cancel</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for msg in messages %}
+    <p class="mt-3">{{msg}}</p>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <p class="mt-5 mb-3 text-muted text-center">Project developed at MUDI Lab by Jury Andrea D'Onofrio <a href="https://github.com/JuryAndreaDonofrio">https://github.com/JuryAndreaDonofrio</a>. For more details on this score please refer to:
+      Cabitza, F., Campagner, A., Sconfienza, L.M., as if sand were stone. New concepts and metrics to probe the
+      ground on which to build trustable AI. BMC Medical Informatics and DecisionMaking. <a
+        href="https://doi.org/10.1186/s12911-020-01224-9">https://doi.org/10.1186/s12911-020-01224-9</a></p>
+  </form>
+
+  <script>
+
+    $('#demo').click(function () {
+      $('#demo').html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span> Demo...').addClass('disabled');
+    });
+
+    $(".form-upload [name='method']").val($(".form-test [name='method']").val());
+    $(".form-upload [name='n_iters']").val($(".form-test [name='n_iters']").val());
+
+    $(".form-test [name='method']").change(function () {
+      $(".form-upload [name='method']").val($(".form-test [name='method']").val());
+    });
+
+    $(".form-test [name='n_iters']").change(function () {
+      $(".form-upload [name='n_iters']").val($(".form-test [name='n_iters']").val());
+    });
+  </script>
+
+  <script>
+    function set_cookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        let expires = "expires="+d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    function get_cookie(cname){
+        let name = cname + "=";
+        let ca = document.cookie.split(';');
+        for(let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+  </script>
+
+  <script>
+    var language = {
+      eng: {
+        title: "Degree Of Correspondence (PSI)",
+        scope: "Online tool that computes the degree of correspondence (psi), or similarity between two datasets",
+        description: "PSI is a metrics for quantifying the degree of similarity between two datasets.<br>The needed files consist of:",
+        needed_file_1: "n (row, cases) x m (columns, features) array in csv format",
+        needed_file_2: "n x m or 1 x m array in csv format",
+        mandatory: "Files marked with * are mandatory",
+        file: "Please select the input file to compute their degree of correspondence",
+        firstFile: "Choose first .csv set file *",
+        secondFile: "Choose second .csv set file *",
+        calcBtn: "Calculate the degree of correspondence",
+        firstAlert: " Files must contain a header and not missing values.",
+        secondAlert: " Not more than one of the sets can represent a single point.",
+        message: "Files are allowed only in .csv extension! Try again",
+        demo: "Demo",
+        help: " Need help?",
+        firstnamecoloumn: "Insert the name of the 1st most predictive feature (exactly as in the header)",
+        secondnamecoloumn: "Insert the name of the 2nd most predictive feature (exactly as in the header)",
+        namecoloumntarget: "Insert the name of the target",
+        textarea: "Insert the name of the features that have to be standardized (divided by a comma each)",
+        degreetovisualize: "Insert the degree of correspondence to visualize (if known) [0-1]",
+        thirdAlert: "The procedure for calculating the PSI is computationally expensive, it is recommended to pre-calculate and enter it in the right field"
+      },
+      ita: {
+        title: "Grado di Corrispondenza (PSI)",
+        scope: "Strumento online che calcola il grado di corrispondenza (psi), o di similarità tra due dataset",
+        description: "PSI è una metrica per quantificare il grado di somiglianza tra due dataset. <br> I file necessari sono:",
+        needed_file_1: "una matrice n (riga, casi) x m (colonne, caratteristiche) in formato csv",
+        needed_file_2: "una matrice n x m o un vettore colonna 1 x m in formato csv",
+        mandatory: "I campi segnati con * sono obbligatori",
+        file: "Si prega di selezionare i file di input per calcolare il loro grado di corrispondenza",
+        firstFile: "Scegli il primo file .csv *",
+        secondFile: "Scegli il secondo file .csv *",
+        calcBtn: "Calcola il grado di corrispondenza",
+        firstAlert: " I file devono contenere un'intestazione e non valori mancanti.",
+        secondAlert: " Non più di uno dei dataset può rappresentare un singolo punto.",
+        message: "I File sono permessi solamente nell'estensione .csv! Riprova",
+        demo: "Demo",
+        help: " Ti serve aiuto?</a>",
+        firstnamecoloumn: "Inserisci il nome della prima feature più predittiva (esattamente come nell'intestazione)",
+        secondnamecoloumn: "Inserisci il nome della seconda feature più predittiva (esattamente come nell'intestazione)",
+        namecoloumntarget: "Inserisci il nome del target",
+        textarea: "Inserisci il nome delle features che devono essere standardizzate (ciascuna divisa da una virgola)",
+        degreetovisualize: "Inserisci il grado di corrispondenza da visualizzare (se noto) [0-1]",
+        thirdAlert: "La procedura per il calcolo del PSI è computazionalmente onerosa, è consigliato pre-calcolarlo e inserirlo nell'apposito campo"
+      }
+    }
+
+    function load_language(l = "eng") {
+        if(typeof language[l] === "undefined"){
+            l="eng";
+        }
+        set_cookie("language", l, 30);
+        for (const key in language[l]) {
+            document.getElementById(key).innerHTML = language[l][key];
+        }
+    }
+    var cookie_language = get_cookie("language");
+    load_language(cookie_language);
+  </script>
+
+  <script>
+    var file = document.getElementById('firstCSV');
+    var file2 = document.getElementById('secondCSV');
+
+    controlCSV = function (e) {
+      var fileName = e.target.files[0].name;
+      var nextSibling = e.target.nextElementSibling;
+      nextSibling.innerText = fileName;
+      var ext = this.value.match(/\.([^\.]+)$/)[1];
+      switch (ext) {
+        case 'csv':
+          nextSibling.classList.remove('input_file_color_error');
+          if (!document.getElementById('firstFile').classList.contains('input_file_color_error') && !document.getElementById('secondFile').classList.contains('input_file_color_error'))
+            document.getElementById('message').classList.add('invisible');
+          break;
+
+        default:
+          document.getElementById('message').classList.remove('invisible');
+          this.reportValidity();
+          nextSibling.classList.add('input_file_color_error');
+          file.value = "";
+      }
+    };
+    file.onchange = controlCSV;
+    file2.onchange = controlCSV;
+  </script>
+
+  <script>
+    function loop(previousTime = 0, w = 0){
+        window.requestAnimationFrame((currentTimeInMillisecond) => {
+            let deltaTimeInMillisecond = currentTimeInMillisecond - previousTime;
+            previousTime = currentTimeInMillisecond;
+            if(deltaTimeInMillisecond>0){
+                let fps = 1000/deltaTimeInMillisecond;
+                w += (100-w)/500;
+                //console.log(w, (100-w), fps);
+                $('.progress-bar').width(w + "%");
+            }
+            if(w < 100){
+                loop(previousTime, w);
+            }
+        });
+    }
+
+    $(document).ready(function(){
+        $('#form').submit(function(event){
+            event.preventDefault();
+            readFileHeader();
+        });
+    });
+  </script>
+
+  <script>
+    $(document).ready(function() {
+        document.getElementById('textarea1').addEventListener('change', readFile);
+        document.getElementById('examplenamecoloumntarget').addEventListener('change', readFile);
+        document.getElementById('examplefirstnamecoloumn').addEventListener('change', readFile);
+        document.getElementById('examplesecondnamecoloumn').addEventListener('change', readFile);
+    });
+
+    function readFile () {
+        readFile2('firstCSV', function () {
+
+            processData(this.result)
+        });
+
+        readFile2('secondCSV', function () {
+
+            processData(this.result)
+        });
+    }
+
+    function chiama_ajax () {
+        $('#calcBtn').html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>Calculating...').addClass('disabled');
+        $('#form').ajaxSubmit({
+            beforeSubmit:function(){
+                $('.progress-bar').width('0%');
+            },
+            uploadProgress: function(event, position, total, percentageComplete)
+            {
+                loop()
+            },
+            success:function(data){
+                function ReplaceContent(NC) {
+                    document.open();
+                    document.write(NC);
+                    document.close();
+                }
+                ReplaceContent(data);
+            },
+            resetForm: true
+        });
+        return false;
+    }
+
+    function readFileHeader () {
+        readFile2('firstCSV', function () {
+            var allTextLines = this.result.split(/\r\n|\n/);
+            var headers = allTextLines[0].split(',');
+            headers.shift();
+            var b = true;
+            var cookie_language = get_cookie("language");
+
+            for (var i=0; i<headers.length && b; i++) {
+                if (isNumeric(headers[i])) {
+                    b = false;
+                    if(cookie_language === "eng")
+                        alert("Header doesn't exist in the first CSV");
+                    else
+                        alert("Nessun header presente nel primo CSV");
+                }
+            }
+
+            var missing_value = true;
+            for (var raw=1; raw<allTextLines.length; raw++) {
+                var values = allTextLines[raw].split(',');
+                for (var column=1; column < allTextLines.length && missing_value; column++) {
+                    if (values[column] == '') {
+                        missing_value = false;
+                        if(cookie_language === "eng")
+                            alert("The first CSV contains missing values");
+                        else
+                            alert("Il primo CSV contiene valori vuoti");
+                    }
+                }
+            }
+            if (b && missing_value) {
+                readFile2("secondCSV", function(){
+                    var allTextLines2 = this.result.split(/\r\n|\n/);
+                    var headers = allTextLines2[0].split(',');
+                    headers.shift();
+                    var b2 = true;
+                    for (var i=0; i<headers.length && b2; i++) {
+                        if (isNumeric(headers[i])) {
+                            b2 = false;
+                            if(cookie_language === "eng")
+                                alert("Header doesn't exist in the second CSV");
+                            else
+                                alert("Nessun header presente nel secondo CSV");
+                        }
+                    }
+                    var missing_value2 = true;
+                    for (var raw=1; raw<allTextLines2.length; raw++) {
+                    var values = allTextLines2[raw].split(',');
+                        for (var column=1; column < allTextLines2.length && missing_value2; column++) {
+                            if (values[column] == '') {
+                                missing_value2 = false;
+                                if(cookie_language === "eng")
+                                    alert("The second CSV contains missing values");
+                                else
+                                    alert("Il secondo CSV contiene valori vuoti");
+                            }
+                        }
+                    }
+                    if (b2 && missing_value2 && allTextLines.length > 3 && allTextLines2.length > 3)
+                        chiama_ajax();
+                    if (allTextLines.length <= 3 && allTextLines2.length <= 3)
+                        if(cookie_language === "eng")
+                            alert("Not more than one of the sets can represent a single point! Try again");
+                        else
+                            alert("Non più di uno dei dataset può rappresentare un singolo punto! Riprova");
+                });
+            }
+
+        });
+    }
+
+    function readFile2 (id, callback) {
+        const file = document.getElementById(id);
+        var reader = new FileReader();
+        reader.onload = callback;
+        reader.readAsBinaryString(file.files[0]);
+    }
+
+    function processData(allText) {
+        var allTextLines = allText.split(/\r\n|\n/);
+        var headers = allTextLines[0].split(',');
+        headers.shift();
+        var cookie_language = get_cookie("language");
+
+        //first feature
+        var elem = document.getElementById('examplefirstnamecoloumn').value;
+        if (elem != '')  {
+            if (!headers.includes(elem))
+                if(cookie_language === "eng")
+                    alert("First feature doesn't exist in the header");
+                else
+                    alert("La prima caratteristica non è presente nel header");
+        }
+
+        //second feature
+        var elem = document.getElementById('examplesecondnamecoloumn').value;
+        if (elem != '') {
+            if (!headers.includes(elem))
+                if(cookie_language === "eng")
+                    alert("Second feature doesn't exist in the header");
+                else
+                    alert("La seconda caratteristica non è presente nel header");
+        }
+
+        //target coloumn
+        var elem = document.getElementById('examplenamecoloumntarget').value;
+        if (elem != '') {
+            if (!headers.includes(elem))
+                if(cookie_language === "eng")
+                    alert("Target doesn't exist in the header");
+                else
+                    alert("Il target non è presente nel header");
+        }
+
+        //column_to_stardard
+        var elem = document.getElementById('textarea1').value.split(",");
+        elem.shift()
+        if (elem.length > 0){
+            for (var i=0; i<elem.length; i++) {
+                if (!headers.includes(elem[i]))
+                    if(cookie_language === "eng")
+                        alert("One or more columns aren't exist in the header");
+                    else
+                        alert("Una o più colonne non sono presenti nel header");
+            }
+        }
+    }
+  </script>
+
+  <script>
+    function isNumeric(str) {
+        if (typeof str != "string") return false // we only process strings!
+            return !isNaN(str) && // use type coercion to parse the entirety of the string (parseFloat alone does not do this)...
+        !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+    }
+  </script>
+
+</body>
+
+
+
+
+
